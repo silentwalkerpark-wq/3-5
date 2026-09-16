@@ -1,0 +1,6 @@
+{
+  "name": "주관식 상식 퀴즈 슬라이드",
+  "description": "저출산, 부양가족, 용, 아이치 나고야 아시안 게임 등 12개 주제의 주관식 문제와 힌트, 사진이 포함된 인터랙티브 퀴즈 슬라이드",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
