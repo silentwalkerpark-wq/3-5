@@ -22,12 +22,25 @@ export const QuizSummaryModal: React.FC<QuizSummaryModalProps> = ({
   if (!isOpen) return null;
 
   const total = slides.length;
-  const correctCount = slides.filter((s) => userProgress[s.id]?.isCorrect === true).length;
-  const revealedCount = slides.filter(
-    (s) => userProgress[s.id]?.isAnswerRevealed === true && userProgress[s.id]?.isCorrect !== true
-  ).length;
+  let correctCount = 0;
+  let revealedCount = 0;
+  let totalWrongAttempts = 0;
+
+  slides.forEach((s) => {
+    const prog = userProgress[s.id];
+    if (prog?.isCorrect === true) {
+      correctCount += 1;
+    } else if (prog?.isAnswerRevealed === true) {
+      revealedCount += 1;
+    }
+    totalWrongAttempts += prog?.wrongAttempts || 0;
+  });
+
   const unansweredCount = total - correctCount - revealedCount;
-  const scorePercent = Math.round((correctCount / total) * 100);
+  const basePoints = correctCount * 10;
+  const penaltyPoints = totalWrongAttempts * 2;
+  const finalScore = Math.max(0, basePoints - penaltyPoints);
+  const scorePercent = Math.round((finalScore / 120) * 100);
 
   return (
     <div
@@ -48,7 +61,7 @@ export const QuizSummaryModal: React.FC<QuizSummaryModalProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">퀴즈 학습 및 채점 결과</h2>
-              <p className="text-xs text-slate-500">12개 주관식 문제 학습 현황</p>
+              <p className="text-xs text-slate-500">12문제 (문제당 10점, 오답 1회당 -2점 감점 / 총 120점 만점)</p>
             </div>
           </div>
           <button
@@ -63,23 +76,26 @@ export const QuizSummaryModal: React.FC<QuizSummaryModalProps> = ({
 
         {/* Score Stats Bar */}
         <div className="p-6 border-b border-slate-100 bg-white">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-3">
             <div className="p-3.5 rounded-2xl bg-blue-50 border border-blue-100">
-              <p className="text-xs font-bold text-blue-600 mb-1">정답률</p>
-              <p className="text-2xl font-black text-blue-900">{scorePercent}%</p>
+              <p className="text-xs font-bold text-blue-600 mb-1">최종 점수</p>
+              <p className="text-2xl font-black text-blue-900">{finalScore} <span className="text-xs font-normal text-slate-500">/ 120점</span></p>
             </div>
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100">
-              <p className="text-xs font-bold text-emerald-600 mb-1">직접 맞힘</p>
-              <p className="text-2xl font-black text-emerald-900">{correctCount} <span className="text-sm font-normal text-emerald-700">/ {total}</span></p>
+              <p className="text-xs font-bold text-emerald-600 mb-1">정답 획득</p>
+              <p className="text-2xl font-black text-emerald-900">+{basePoints}점 <span className="text-xs font-normal text-emerald-700">({correctCount}개)</span></p>
             </div>
-            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-100">
-              <p className="text-xs font-bold text-amber-600 mb-1">정답 확인</p>
-              <p className="text-2xl font-black text-amber-900">{revealedCount}</p>
+            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-100">
+              <p className="text-xs font-bold text-rose-600 mb-1">오답 감점</p>
+              <p className="text-2xl font-black text-rose-900">-{penaltyPoints}점 <span className="text-xs font-normal text-rose-700">({totalWrongAttempts}회)</span></p>
             </div>
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
               <p className="text-xs font-bold text-slate-500 mb-1">미완료</p>
-              <p className="text-2xl font-black text-slate-700">{unansweredCount}</p>
+              <p className="text-2xl font-black text-slate-700">{unansweredCount} <span className="text-xs font-normal text-slate-500">/ {total}</span></p>
             </div>
+          </div>
+          <div className="text-xs text-center text-slate-500 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-200">
+            💡 채점 공식: (정답 {correctCount}개 × 10점 = {basePoints}점) - (오답 제출 {totalWrongAttempts}회 × 2점 = {penaltyPoints}점 감점) = <strong>총 {finalScore}점</strong> (120점 만점)
           </div>
         </div>
 

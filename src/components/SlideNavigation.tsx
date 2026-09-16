@@ -98,6 +98,22 @@ export const SlideNavigation: React.FC<SlideNavigationProps> = ({
               </button>
             );
           })}
+
+          {/* 13th Slide Button: Score Slide */}
+          <button
+            id="slide-dot-score"
+            onClick={() => onJumpToSlide(slides.length)}
+            aria-label="13. 최종 점수 발표"
+            title="13. 최종 점수 발표 (120점 만점)"
+            className={`relative px-2.5 py-1 text-xs rounded-lg border transition-all flex items-center gap-1 shrink-0 ${
+              currentIndex === slides.length
+                ? 'bg-amber-400 text-amber-950 border-amber-500 ring-2 ring-amber-500 ring-offset-1 font-bold shadow-xs'
+                : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 font-semibold'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+            <span>최종 점수</span>
+          </button>
         </div>
 
         {/* Right: Next or Results Button */}
@@ -113,11 +129,11 @@ export const SlideNavigation: React.FC<SlideNavigationProps> = ({
           {isLast ? (
             <button
               id="finish-summary-btn"
-              onClick={onOpenSummary}
-              className="px-5 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all"
+              onClick={() => onJumpToSlide(0)}
+              className="px-5 py-2 rounded-xl text-sm font-bold bg-slate-800 text-white hover:bg-slate-900 shadow-md flex items-center gap-1.5 transition-all"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>전체 결과 보기</span>
+              <span>1번 문제로</span>
+              <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
             <button
@@ -125,7 +141,7 @@ export const SlideNavigation: React.FC<SlideNavigationProps> = ({
               onClick={onNext}
               className="px-5 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-500/20 flex items-center gap-1.5 transition-all"
             >
-              <span>다음 슬라이드</span>
+              <span>{currentIndex === slides.length - 1 ? '최종 점수 보기' : '다음 슬라이드'}</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           )}

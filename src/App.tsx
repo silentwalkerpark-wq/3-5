@@ -8,6 +8,7 @@ import { SlideNavigation } from './components/SlideNavigation';
 import { SlideOverviewModal } from './components/SlideOverviewModal';
 import { QuizSummaryModal } from './components/QuizSummaryModal';
 import { ImageModal } from './components/ImageModal';
+import { ScoreSlide } from './components/ScoreSlide';
 import {
   setMuted,
   getMuted,
@@ -43,7 +44,8 @@ export default function App() {
         isCorrect: null,
         revealedHints: [false, false],
         isAnswerRevealed: false,
-        attempts: 0
+        attempts: 0,
+        wrongAttempts: 0
       };
     });
     return initial;
@@ -65,17 +67,31 @@ export default function App() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  const totalSlides = QUIZ_SLIDES.length;
-  const currentSlide = QUIZ_SLIDES[currentIndex];
-  const currentSlideProgress = userProgress[currentSlide.id] || {
-    userAnswer: '',
-    isCorrect: null,
-    revealedHints: [false, false],
-    isAnswerRevealed: false,
-    attempts: 0
-  };
+  const totalQuestions = QUIZ_SLIDES.length;
+  const totalSlides = totalQuestions + 1; // 12 questions + 1 score result slide
+  const isScoreSlide = currentIndex === totalQuestions;
+  const currentSlide = !isScoreSlide ? QUIZ_SLIDES[currentIndex] : null;
+
+  const currentSlideProgress = currentSlide
+    ? userProgress[currentSlide.id] || {
+        userAnswer: '',
+        isCorrect: null,
+        revealedHints: [false, false],
+        isAnswerRevealed: false,
+        attempts: 0,
+        wrongAttempts: 0
+      }
+    : {
+        userAnswer: '',
+        isCorrect: null,
+        revealedHints: [false, false],
+        isAnswerRevealed: false,
+        attempts: 0,
+        wrongAttempts: 0
+      };
 
   const handleUpdateCurrentProgress = (updated: Partial<UserSlideProgress>) => {
+    if (!currentSlide) return;
     setUserProgress((prev) => ({
       ...prev,
       [currentSlide.id]: {
@@ -128,7 +144,8 @@ export default function App() {
         isCorrect: null,
         revealedHints: [false, false],
         isAnswerRevealed: false,
-        attempts: 0
+        attempts: 0,
+        wrongAttempts: 0
       };
     });
     setUserProgress(initial);
@@ -190,7 +207,7 @@ export default function App() {
       <SlideHeader
         currentIndex={currentIndex}
         totalSlides={totalSlides}
-        category={currentSlide.category}
+        category={isScoreSlide ? '최종 점수 발표' : (currentSlide ? currentSlide.category : '')}
         viewMode={viewMode}
         onToggleViewMode={() => setViewMode((m) => (m === 'quiz' ? 'presentation' : 'quiz'))}
         isMuted={isMutedState}
@@ -198,7 +215,7 @@ export default function App() {
         isFullscreen={isFullscreen}
         onToggleFullscreen={handleToggleFullscreen}
         onOpenOverview={() => setIsOverviewOpen(true)}
-        onOpenSummary={() => setIsSummaryOpen(true)}
+        onOpenSummary={() => setCurrentIndex(totalQuestions)}
         onResetQuiz={handleResetQuiz}
         answeredCount={answeredCount}
       />
@@ -207,23 +224,32 @@ export default function App() {
       <main className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 w-full max-w-7xl mx-auto">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentSlide.id}
+            key={isScoreSlide ? 'score-slide' : (currentSlide ? currentSlide.id : 'slide')}
             initial={{ opacity: 0, y: 12, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.99 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
             className="w-full"
           >
-            <SlideCard
-              slide={currentSlide}
-              progress={currentSlideProgress}
-              viewMode={viewMode}
-              onUpdateProgress={handleUpdateCurrentProgress}
-              onOpenImageModal={() => setIsImageModalOpen(true)}
-              onNextSlide={handleNextSlide}
-              isLastSlide={currentIndex === totalSlides - 1}
-              onOpenSummary={() => setIsSummaryOpen(true)}
-            />
+            {isScoreSlide ? (
+              <ScoreSlide
+                slides={QUIZ_SLIDES}
+                userProgress={userProgress}
+                onResetQuiz={handleResetQuiz}
+                onJumpToSlide={handleJumpToSlide}
+              />
+            ) : currentSlide ? (
+              <SlideCard
+                slide={currentSlide}
+                progress={currentSlideProgress}
+                viewMode={viewMode}
+                onUpdateProgress={handleUpdateCurrentProgress}
+                onOpenImageModal={() => setIsImageModalOpen(true)}
+                onNextSlide={handleNextSlide}
+                isLastSlide={currentIndex === totalQuestions - 1}
+                onOpenSummary={() => setCurrentIndex(totalQuestions)}
+              />
+            ) : null}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -237,17 +263,17 @@ export default function App() {
         onPrev={handlePrevSlide}
         onNext={handleNextSlide}
         onJumpToSlide={handleJumpToSlide}
-        onOpenSummary={() => setIsSummaryOpen(true)}
+        onOpenSummary={() => setCurrentIndex(totalQuestions)}
       />
 
       {/* Fullscreen Image Lightbox Modal */}
       <ImageModal
-        isOpen={isImageModalOpen}
+        isOpen={isImageModalOpen && !!currentSlide}
         onClose={() => setIsImageModalOpen(false)}
-        imageUrl={currentSlide.imageUrl}
-        imageAlt={currentSlide.imageAlt}
-        imageCaption={currentSlide.imageCaption}
-        questionNumber={currentSlide.questionNumber}
+        imageUrl={currentSlide?.imageUrl || ''}
+        imageAlt={currentSlide?.imageAlt || ''}
+        imageCaption={currentSlide?.imageCaption || ''}
+        questionNumber={currentSlide?.questionNumber || 0}
       />
 
       {/* All Slides Overview Grid Modal */}

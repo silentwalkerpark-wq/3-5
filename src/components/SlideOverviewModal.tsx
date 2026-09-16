@@ -120,6 +120,43 @@ export const SlideOverviewModal: React.FC<SlideOverviewModalProps> = ({
               </button>
             );
           })}
+
+          {/* 13th Slide: Score Slide Card */}
+          <button
+            id="overview-item-score"
+            onClick={() => {
+              onSelectSlide(slides.length);
+              onClose();
+            }}
+            className={`relative text-left rounded-2xl border p-3 transition-all hover:shadow-md flex flex-col justify-between group overflow-hidden ${
+              currentIndex === slides.length
+                ? 'border-amber-500 bg-amber-50/50 ring-2 ring-amber-500/30'
+                : 'border-amber-200 bg-gradient-to-br from-amber-50/60 to-yellow-50/30 hover:border-amber-400'
+            }`}
+          >
+            <div className="aspect-16/10 w-full rounded-xl overflow-hidden mb-2.5 bg-gradient-to-tr from-amber-400 to-yellow-400 flex flex-col items-center justify-center text-amber-950 shadow-inner">
+              <span className="text-2xl font-black mb-0.5">🏆</span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/80">120점 만점</span>
+            </div>
+            <div>
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className="text-[10px] font-bold uppercase text-amber-800">
+                  결과 & 채점
+                </span>
+                {currentIndex === slides.length && (
+                  <span className="text-[10px] font-bold text-amber-800 bg-amber-200 px-1.5 py-0.2 rounded">
+                    현재
+                  </span>
+                )}
+              </div>
+              <p className="text-xs font-bold text-slate-900">
+                13. 최종 점수 발표
+              </p>
+              <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">
+                오답 감점(-2점)을 반영한 총점 및 성적표
+              </p>
+            </div>
+          </button>
         </div>
       </div>
     </div>

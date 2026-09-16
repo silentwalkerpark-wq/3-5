@@ -12,7 +12,8 @@ import {
   ArrowRight,
   Send,
   Eye,
-  RotateCcw
+  RotateCcw,
+  Award
 } from 'lucide-react';
 import { QuizSlide, UserSlideProgress, ViewMode } from '../types';
 import { checkAnswer } from '../utils/answerChecker';
@@ -105,22 +106,25 @@ export const SlideCard: React.FC<SlideCardProps> = ({
         userAnswer: trimmed,
         isCorrect: true,
         isAnswerRevealed: true,
-        attempts: newAttempts
+        attempts: newAttempts,
+        wrongAttempts: progress.wrongAttempts || 0
       });
       setValidationMessage({
         type: 'correct',
-        text: '정답입니다! 완벽하게 맞히셨습니다 🎉'
+        text: '정답입니다! +10점 획득 🎉'
       });
     } else {
       playIncorrectSound();
+      const newWrongAttempts = (progress.wrongAttempts || 0) + 1;
       onUpdateProgress({
         userAnswer: trimmed,
         isCorrect: false,
-        attempts: newAttempts
+        attempts: newAttempts,
+        wrongAttempts: newWrongAttempts
       });
       setValidationMessage({
         type: 'incorrect',
-        text: '오답입니다. 힌트를 확인하고 다시 시도해보세요!'
+        text: `오답입니다! (-2점 감점, 현재 오답 ${newWrongAttempts}회) 힌트를 읽고 다시 도전해보세요!`
       });
     }
   };
@@ -279,6 +283,19 @@ export const SlideCard: React.FC<SlideCardProps> = ({
               <div>
                 {!isResolved ? (
                   <form onSubmit={handleCheckAnswer} className="space-y-3">
+                    <div className="flex items-center justify-between text-xs bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 mb-1">
+                      <span className="font-semibold flex items-center gap-1.5">
+                        <Award className="w-3.5 h-3.5 text-blue-600" />
+                        <span>배점: 정답 시 10점 (총 120점 만점)</span>
+                      </span>
+                      {(progress.wrongAttempts || 0) > 0 ? (
+                        <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                          오답 {progress.wrongAttempts}회 (-{(progress.wrongAttempts || 0) * 2}점 감점)
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">오답 1회 제출 시 -2점 감점</span>
+                      )}
+                    </div>
                     <div className="flex flex-col sm:flex-row gap-2">
                       <div className="relative flex-1">
                         <input

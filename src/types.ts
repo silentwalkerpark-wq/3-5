@@ -22,4 +22,5 @@ export interface UserSlideProgress {
   revealedHints: [boolean, boolean];
   isAnswerRevealed: boolean;
   attempts: number;
+  wrongAttempts: number;
 }
