@@ -286,9 +286,9 @@ export const QUIZ_SLIDES: QuizSlide[] = [
       '현판(이름표) 글씨가 다른 문들과 달리 세로로 길게 쓰여 있는 것이 독특한 특징이에요.',
       '남대문 바로 옆에는 600년 역사를 자랑하는 대한민국 대표 전통시장인 \'남대문시장\'이 있어요.'
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1200&q=80',
-    imageAlt: '서울 도심 속 위풍당당하게 서 있는 숭례문(남대문)의 전통 누각과 성곽',
-    imageCaption: '조선 한양도성의 남쪽 정문이자 자랑스러운 국보 남대문(숭례문)'
+    imageUrl: '/namdaemun.jpg',
+    imageAlt: '대한민국 국보 제1호 숭례문(남대문)의 웅장한 실제 전경 사진',
+    imageCaption: '서울 한양도성의 남쪽 정문이자 대한민국 국보인 실제 남대문(숭례문)'
   },
   {
     id: 12,

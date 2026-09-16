@@ -241,6 +241,10 @@ export const ScoreSlide: React.FC<ScoreSlideProps> = ({
                       <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 shrink-0">
                         +10점
                       </span>
+                    ) : prog?.isPassed ? (
+                      <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded shrink-0">
+                        통과
+                      </span>
                     ) : prog?.isAnswerRevealed ? (
                       <span className="text-[11px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.2 rounded shrink-0">
                         공개됨

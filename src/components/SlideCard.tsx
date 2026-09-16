@@ -11,7 +11,7 @@ import {
   BookOpen,
   ArrowRight,
   Send,
-  Eye,
+  SkipForward,
   RotateCcw,
   Award
 } from 'lucide-react';
@@ -126,6 +126,19 @@ export const SlideCard: React.FC<SlideCardProps> = ({
         type: 'incorrect',
         text: `오답입니다! (-2점 감점, 현재 오답 ${newWrongAttempts}회) 힌트를 읽고 다시 도전해보세요!`
       });
+    }
+  };
+
+  const handlePassQuestion = () => {
+    if (!progress.isCorrect) {
+      onUpdateProgress({
+        isPassed: true
+      });
+    }
+    if (isLastSlide) {
+      onOpenSummary();
+    } else {
+      onNextSlide();
     }
   };
 
@@ -312,7 +325,7 @@ export const SlideCard: React.FC<SlideCardProps> = ({
                         type="submit"
                         id={`submit-answer-btn-${slide.id}`}
                         disabled={!inputValue.trim()}
-                        className={`px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                        className={`px-5 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shrink-0 ${
                           inputValue.trim()
                             ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-500/20 active:scale-[0.98]'
                             : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
@@ -321,19 +334,21 @@ export const SlideCard: React.FC<SlideCardProps> = ({
                         <Send className="w-4 h-4" />
                         <span>정답 확인</span>
                       </button>
+                      <button
+                        type="button"
+                        id={`pass-question-btn-${slide.id}`}
+                        onClick={handlePassQuestion}
+                        className="px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 shadow-xs active:scale-[0.98] shrink-0"
+                        title="이 문제를 풀지 않고 다음 문제로 넘어갑니다"
+                      >
+                        <SkipForward className="w-4 h-4 text-slate-600" />
+                        <span>통과</span>
+                      </button>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                      <span>엔터(Enter) 키로 빠르게 제출할 수 있습니다</span>
-                      <button
-                        type="button"
-                        id={`giveup-btn-${slide.id}`}
-                        onClick={handleRevealAnswer}
-                        className="text-slate-500 hover:text-blue-600 font-semibold underline underline-offset-2 flex items-center gap-1 transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>정답 바로 보기</span>
-                      </button>
+                      <span>엔터(Enter) 키로 빠르게 제출하거나, 어려울 땐 [통과]를 눌러 다음 문제로 넘어가세요.</span>
+                      <span className="text-slate-400 hidden sm:inline">💡 통과 시 오답 감점 없음</span>
                     </div>
                   </form>
                 ) : (
@@ -396,17 +411,19 @@ export const SlideCard: React.FC<SlideCardProps> = ({
 
                 {/* Validation Feedback Message */}
                 {validationMessage.text && validationMessage.type === 'incorrect' && (
-                  <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between animate-shake">
+                  <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-shake">
                     <div className="flex items-center gap-2 font-medium">
                       <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
                       <span>{validationMessage.text}</span>
                     </div>
                     <button
                       type="button"
-                      onClick={handleRevealAnswer}
-                      className="text-xs font-bold text-rose-700 underline shrink-0 hover:text-rose-900"
+                      id={`incorrect-pass-btn-${slide.id}`}
+                      onClick={handlePassQuestion}
+                      className="text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300 shrink-0 flex items-center justify-center gap-1.5 transition-colors shadow-xs"
                     >
-                      정답 확인하기
+                      <SkipForward className="w-3.5 h-3.5 text-slate-500" />
+                      <span>다음 문제로 통과</span>
                     </button>
                   </div>
                 )}

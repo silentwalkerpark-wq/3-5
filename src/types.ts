@@ -23,4 +23,5 @@ export interface UserSlideProgress {
   isAnswerRevealed: boolean;
   attempts: number;
   wrongAttempts: number;
+  isPassed?: boolean;
 }

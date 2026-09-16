@@ -139,6 +139,10 @@ export const QuizSummaryModal: React.FC<QuizSummaryModalProps> = ({
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>정답</span>
                     </span>
+                  ) : prog?.isPassed ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700">
+                      <span>통과</span>
+                    </span>
                   ) : isRevealed ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800">
                       <span>공개됨</span>
